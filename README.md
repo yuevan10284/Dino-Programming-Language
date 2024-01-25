@@ -1,1 +1,1 @@
-Kitten
+Kitten Language
