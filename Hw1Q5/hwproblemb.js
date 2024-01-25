@@ -1,22 +1,18 @@
 import * as ohm from 'ohm-js';
 
 const arithmeticGrammar = ohm.grammar(`Arithmetic {
-  Exp = AddExp
-  AddExp
-    = AddExp "+" MulExp  -- plus
-    | AddExp "-" MulExp  -- minus
-    | MulExp
-  MulExp
-    = MulExp "*" UnaryExp  -- times
-    | MulExp "/" UnaryExp  -- divide
+  Exp = Term
+  Term
+    = Term "+" Factor  -- plus
+    | Term "-" Factor  -- minus
+    | Factor
+  Factor
+    = Primary "^" Factor  -- power
     | UnaryExp
   UnaryExp
-    = "-" ExpExp  -- neg
-    | ExpExp
-  ExpExp
-    = PriExp "^" UnaryExp  -- power
-    | PriExp
-  PriExp
+    = "-" Primary  -- neg
+    | Primary
+  Primary
     = "(" Exp ")"  -- paren
     | number
   number
@@ -27,25 +23,19 @@ const arithmeticSemantics = arithmeticGrammar.createSemantics().addOperation('ev
   Exp(e) {
     return e.eval();
   },
-  AddExp_plus(a, _, b) {
+  Term_plus(a, _, b) {
     return a.eval() + b.eval();
   },
-  AddExp_minus(a, _, b) {
+  Term_minus(a, _, b) {
     return a.eval() - b.eval();
   },
-  MulExp_times(a, _, b) {
-    return a.eval() * b.eval();
-  },
-  MulExp_divide(a, _, b) {
-    return a.eval() / b.eval();
+  Factor_power(a, _, b) {
+    return Math.pow(a.eval(), b.eval());
   },
   UnaryExp_neg(_, e) {
     return -e.eval();
   },
-  ExpExp_power(a, _, b) {
-    return Math.pow(a.eval(), b.eval());
-  },
-  PriExp_paren(_, e, __) {
+  Primary_paren(_, e, __) {
     return e.eval();
   },
   number(n) {
@@ -62,6 +52,6 @@ function evaluateExpression(expr) {
   }
 }
 
-// Test "-2**2"
-const result = evaluateExpression('-2^2');
+// Test "-2^2"
+const result = evaluateExpression('(-2)^2');
 console.log(result);  // Output should be -4

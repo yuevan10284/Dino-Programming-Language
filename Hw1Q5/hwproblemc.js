@@ -1,25 +1,25 @@
 import * as ohm from 'ohm-js';
 
 const arithmeticGrammar = ohm.grammar(`Arithmetic {
-  Exp = AddExp
-  AddExp
-    = AddExp "+" MulExp  -- plus
-    | AddExp "-" MulExp  -- minus
-    | MulExp
-  MulExp
-    = MulExp "*" UnaryExp  -- times
-    | MulExp "/" UnaryExp  -- divide
-    | UnaryExp
-  UnaryExp
-    = NegativeExp
-    | ExpExp
-  NegativeExp
-    = "-" "(" Exp ")"  -- negParen
-    | "-" number       -- negNumber
-  ExpExp
-    = Primary "^" ExpExp  -- power
+  Exp = Term
+  Term
+    = Term "+" Factor  -- plus
+    | Term "-" Factor  -- minus
+    | Factor
+  Factor
+    = Factor "*" Primary  -- times
+    | Factor "/" Primary  -- divide
     | Primary
   Primary
+    = Negation
+    | Power
+  Negation
+    = "-" "(" Exp ")"  -- negParen
+    | "-" number       -- negNumber
+  Power
+    = Base "^" Primary  -- power
+    | Base
+  Base
     = number
     | "(" Exp ")"  -- paren
   number
@@ -30,25 +30,25 @@ const arithmeticSemantics = arithmeticGrammar.createSemantics().addOperation('ev
   Exp(e) {
     return e.eval();
   },
-  AddExp_plus(a, _, b) {
+  Term_plus(a, _, b) {
     return a.eval() + b.eval();
   },
-  AddExp_minus(a, _, b) {
+  Term_minus(a, _, b) {
     return a.eval() - b.eval();
   },
-  MulExp_times(a, _, b) {
+  Factor_times(a, _, b) {
     return a.eval() * b.eval();
   },
-  MulExp_divide(a, _, b) {
+  Factor_divide(a, _, b) {
     return a.eval() / b.eval();
   },
-  UnaryExp_neg(_, e) {
+  Primary_neg(_, e) {
     return -e.eval();
   },
-  ExpExp_power(a, _, b) {
+  Power_power(a, _, b) {
     return Math.pow(a.eval(), b.eval());
   },
-  Primary_paren(_, e, __) {
+  Base_paren(_, e, __) {
     return e.eval();
   },
   number(n) {
@@ -69,7 +69,7 @@ function evaluateExpression(expr) {
 try {
   console.log(evaluateExpression('-2^2'));  // Should throw a syntax error
 } catch (e) {
-  console.log(e.message); 
+  console.log(e.message); // Expected to log a syntax error message
 }
 console.log(evaluateExpression('(-2)^2')); // Output should be 4
 console.log(evaluateExpression('-(2^2)')); // Output should be -4
