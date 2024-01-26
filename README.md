@@ -20,7 +20,7 @@ In the primordial landscape of programming languages, where the echoes of innova
 * Overall Dinosaur simple syntax. 
 
 
-###Other Notes/Constraints
+### Other Notes/Constraints
 * Identifiers have to be declared before they are used. The Dino comes from an egg first!
 * Usage of identifiers without initialization is forbidden, mirroring the disciplined order observed in the prehistoric world.
 * Uniqueness reigns supreme, as identifiers must be singular within their scope, mirroring the individuality of each species in the coding ecosystem.
