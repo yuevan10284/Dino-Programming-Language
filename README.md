@@ -16,6 +16,8 @@ In the primordial landscape of programming languages, where the echoes of innova
 * Fossilized Functions: Define functions that transcend the temporal boundaries, ensuring the endurance and discoverability of your code.
 * T-Rex Types: Immerse yourself in the world of strongly typed variables, fortified with the fierceness of a T-Rex. Dino's type system guarantees the creation of robust and reliable programs, ensuring that your code stands tall and unyielding, just like the legendary predator that inspired it.
 * Stegosaurus Scoping: Navigate the coding landscape with the protective prowess of a Stegosaurus's spiked tail. Embrace static scoping in Dino, where variables are shielded within their designated domains, ensuring a secure and well-defined environment for your code to flourish.
+* Dinos are simple! Mix of JS and python, not parenthesis in if/while/for statements, but does have brackets where it makes sense.
+* Overall Dinosaur simple syntax. 
 
 
 ###Other Notes/Constraints
