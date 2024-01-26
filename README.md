@@ -1,6 +1,6 @@
-#Dino Programming Language
+# Dino Programming Language
 
-#Introduction
+# Introduction
 Once upon a time, in a land before time, there was a programming language that roared with creativity and ruled the realm of coding. Welcome to Dino, a language where every line of code is a prehistoric adventure waiting to be uncovered. Embrace the power of the dinosaurs as you write programs that stomp through the digital landscape, leaving a trail of Jurassic joy.
 
 ## 🔗 Developers
