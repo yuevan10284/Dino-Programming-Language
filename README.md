@@ -33,3 +33,192 @@ In the primordial landscape of programming languages, where the echoes of innova
 * Cannot have non-boolean value in a conditional or while loop.
 * For loops only take integer values.
 
+## Example Dino Actions
+
+### Printing
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+
+```javascript
+console.log(“Hello world!”)
+```
+
+</td>
+
+<td>
+
+```
+rawr "ROARR, dino angry. I hate comet"
+```
+
+</td>
+</table>
+
+### Assigning variables
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+
+```javascript
+var myNumber = 42;
+var myString = "Hello, World!";
+```
+
+</td>
+
+<td>
+
+```
+dinum eggs ~ 0
+stegostring dinoMessage ~ "roar, world"
+```
+
+</td>
+</table>
+
+### if-statements
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+    
+```javascript
+if (x > 5) {
+  return 1;
+} else if (x < 3) {
+  return -1;
+} else {
+  return 0;
+}
+```
+</td>
+<td>
+    
+```
+if-rex x > 5 {
+  hatch 1
+} t-else x < 3 {
+  hatch -1
+} t-rex {
+  hatch 0
+} 
+```
+</td>
+</table>
+
+### Loops
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+    
+```javascript
+for (var x = 0; x < 5; x++) {
+    break;
+}
+```
+</td>
+<td>
+    
+```
+roar dinum 0 to 5 {
+    stomp
+}
+```
+</td>
+</table>
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+    
+```javascript
+while(true){
+    continue;
+}
+```
+</td>
+<td>
+    
+```
+roaring hit {
+    keepStomping
+}
+```
+</td>
+</table>
+
+
+### Comments
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td> 
+    
+```javascript
+// insert Dinolicious comment.
+```
+</td>
+<td>
+    
+```
+🦖 insert Dinoscrumptious comment.
+```
+</td>
+</table>
+
+
+### Function Declarations
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+    
+```javascript
+function evenOrOdd(x){
+    return x % 2 == 0
+}
+```
+</td>
+<td>
+    
+```
+quest evenOrOdd(dinum x){
+    hatch x % 2 == 0
+}
+```
+</td>
+</table>
+
+<table>
+<tr> <th>JavaScript</th><th>Dino</th><tr>
+</tr>
+<td>
+    
+```javascript
+function subtract(a, b){
+    return a - b;
+}
+let c = subtract(a,b);
+```
+</td>
+<td>
+    
+```
+quest subtract(dinum a, dinum b){ 
+   hatch a - b
+}
+dinum c = subtract(a = 10, b = 5)
+```
+</td>
+</table>
