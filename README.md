@@ -15,5 +15,4 @@ Once upon a time, in a land before time, there was a programming language that r
 * Dino Expressions: Channel the raw power of dinosaurs into your code with expressive syntax.
 * Fossilized Functions: Define functions that stand the test of time, just like ancient fossils waiting to be discovered.
 * T-Rex Types: Strongly typed with a touch of T-Rex fierceness, ensuring robust and reliable programs.
-* Dino-namic Memory Management: Let the language take care of memory like a gentle Brachiosaurus grazing in the meadow.
 * Stegosaurus Scoping: Embrace static scoping, where variables are as well-protected as a Stegosaurus's spiked tail.
