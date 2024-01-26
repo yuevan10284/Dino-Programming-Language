@@ -6,6 +6,8 @@ Once upon a time, in a land before time, there was a programming language that r
 ## 🔗 Developers
 * [@Owen Hunger](https://github.com/ohunger)
 * [@Evan Yu](https://github.com/yuevan10284)
+* [@Anthony Mendizabal](https://github.com/Anthony29M)
+* [@Brandan Bazile](https://github.com/bbazile)
 
 ## Features
 * Dino Expressions: Channel the raw power of dinosaurs into your code with expressive syntax.
