@@ -22,6 +22,7 @@ Once upon a time, in a land before time, there was a programming language that r
 * Identifiers have to be declared before they are used.
 * They may not be used in a place where they have not been initialized.
 * Identifiers must be unique in scope
+* Identifiers must be used according to their scope, and access modifiers aka private, public.
 * Assigning variables must be of the same type. I.E. int x = "hello"  throws Error.  or assigning a previously declared string variable to a previously declared int variable.
 * Arguments/Calls must match up with number of parameters. Explicitly you must say xyz( first = 150 , second = 250)  as opposed to xyz(150,250)
 * break/continue statements may only appear in a loop.
