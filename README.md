@@ -16,3 +16,14 @@ Once upon a time, in a land before time, there was a programming language that r
 * Fossilized Functions: Define functions that stand the test of time, just like ancient fossils waiting to be discovered.
 * T-Rex Types: Strongly typed with a touch of T-Rex fierceness, ensuring robust and reliable programs.
 * Stegosaurus Scoping: Embrace static scoping, where variables are as well-protected as a Stegosaurus's spiked tail.
+
+
+###Other Notes/Constraints
+* Identifiers have to be declared before they are used.
+* They may not be used in a place where they have not been initialized.
+* Assigning variables must be of the same type.
+* Arguments/Calls must match up with number of parameters. Explicitly you must say xyz( first = 150 , second = 250)  as opposed to xyz(150,250)
+* break/continue statements may only appear in a loop.
+* Return may only appear in a function.
+* Declared variables must be read or used once.
+
