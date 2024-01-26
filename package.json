@@ -7,7 +7,7 @@
     "ohm-js": "^17.1.0"
   },
   "name": "dino",
-  "description": "![labossl_programming_language_logo_for_a_language_called_DinoScr_a7db8f2d-1ad2-474e-b542-e8cb4eecb47f](https://github.com/yuevan10284/Dino-Programming-Language/assets/92699280/eb072034-9c9c-4802-b64e-6184a95a2b4f)",
+  "description": "Dino Compiler for cmsi-3802. A fun Dino-themed language.",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
