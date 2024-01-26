@@ -1,4 +1,4 @@
-# Dino Programming Language
+# Dino
 ![labossl_programming_language_logo_for_a_language_called_DinoScr_a7db8f2d-1ad2-474e-b542-e8cb4eecb47f](https://github.com/yuevan10284/Dino-Programming-Language/assets/92699280/eb072034-9c9c-4802-b64e-6184a95a2b4f)
 
 
