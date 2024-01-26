@@ -28,4 +28,6 @@ In the primordial landscape of programming languages, where the echoes of innova
 * The primal commands of 'break' and 'continue' are restricted to the rhythmic beats of loops, echoing the cyclical nature of the prehistoric dance of life.
 * The command 'return' finds its sanctuary solely within the confines of a function.
 * Declared variables, akin to ancient relics, must be respected and acknowledged, their presence acknowledged by usage or reading, safeguarding the balance between creation and utilization in the Dino realm.
+* Cannot have non-boolean value in a conditional or while loop.
+* For loops only take integer values.
 
