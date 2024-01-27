@@ -1,0 +1,12 @@
+🦖 Dino
+quest hungry(dinum hunger) {
+  if-rex hunger > 100 {
+    hatch "full"
+  } t-else {
+    hatch "hungry"
+  }
+}
+
+🦖 Usage
+stegostring ~ hungry(hunger = 50)
+

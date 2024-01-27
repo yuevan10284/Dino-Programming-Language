@@ -1,0 +1,11 @@
+🦖 Dino
+quest sumOfSquares(dinum n) {
+  dinum sum ~ 0
+  roar 1 to n {
+    sum = i * i + sum
+  }
+  hatch sum
+}
+
+🦖 Usage
+int SoS ~ sumOfSquares(n ~ 3)
