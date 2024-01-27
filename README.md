@@ -195,7 +195,7 @@ function evenOrOdd(x){
     
 ```
 quest evenOrOdd(dinum x){
-    hatch x % 2 == 0
+    hatch x % 2 ~~ 0
 }
 ```
 </td>
@@ -219,7 +219,7 @@ let c = subtract(a,b);
 quest subtract(dinum a, dinum b){ 
    hatch a - b
 }
-dinum c = subtract(a = 10, b = 5)
+dinum c = subtract(a ~ 10, b ~ 5)
 ```
 </td>
 </table>
