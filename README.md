@@ -129,7 +129,7 @@ for (var x = 0; x < 5; x++) {
 <td>
     
 ```
-roar dinum 0 to 5 {
+roar 0 to 5 {
     stomp
 }
 ```
