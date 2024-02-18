@@ -1,1 +1,83 @@
+dino {
+  Program   = Statement+
+  Statement = (let | const) id "=" Exp             -- vardec may expand to be static.
+            | function id "(" Params ")" Block     -- fundec
+            | id "~" Exp                           -- assign
+            | print Exp                            -- print
+            | break                                -- break
+            | continue                             -- continue
+            | return Exp                           -- return
+            | return                               -- shortreturn
+            | space
+            | IfStmt
+            | LoopStmt
 
+  Block     = "{" Statement* "}"
+
+  IfStmt    = if Exp Block else Block                       
+            | if Exp Block else IfStmt                      -- elseif
+            | if Exp Block                                  
+
+  LoopStmt  = while Exp Block                               -- while
+            | for id in Exp ("past" | "till") Exp Block      -- range
+
+  Exp       = ("-" | "!") Exp7                        -- unary
+            | Exp1 "?" Exp1 ":" Exp                   -- ternary
+            | Exp1                                    -- Exp
+  Exp1      = Exp1 "||" Exp2                          -- binary
+            | Exp2
+  Exp2      = Exp2 "&&" Exp3                          -- binary
+            | Exp3
+  Exp3      = Exp4 ("<="|"<"|"=="|"!="|">="|">") Exp4 -- binary
+            | Exp4
+  Exp4      = Exp4 ("+" | "-") Exp5                   -- binary
+            | Exp5
+  Exp5      = Exp5 ("*" | "/" | "%") Exp6             -- binary
+            | Exp6
+  Exp6      = Exp7 "**" Exp6                          -- binary
+            | Exp7
+  Exp7      = floatlit      
+            | num
+            | true
+            | false
+            | Call
+            | id                                      -- id
+            | "(" Exp ")"                             -- parens
+            | strlit
+
+  strlit    = "\"" (~"\"" any)* "\""
+
+  Call      = id "(" Args ")"
+  Params    = ListOf<id, ",">
+  Args      = ListOf<Exp, ",">
+
+  Return      = return Exp 		                        -- exp 
+
+  function    = "quest" ~alnum
+  print       = "rawr" ~alnum
+  if          = "if-rex" ~alnum
+  else        = "t-else" ~alnum
+  elseif      = "t-rex" ~alnum
+  return      = "hatch" ~alnum
+  true        = "hit" ~alnum
+  false       = "miss" ~alnum
+  for         = "roar" ~alnum
+  while       = "roaring" ~alnum
+  break       = "stomp" ~alnum
+  let         = "letdino" ~alnum
+  const       = "dinoconst" ~alnum                      -- might add continue, want to add int string, statically typed.
+  continue    =  "keepstomping" ~alnum
+  singleLnCmt =  "🦖" ~alnum
+  
+  
+
+
+  num       = digit+
+  keyword   = let | const | print | function | else | if | elseif | while 
+            | for | in | break | return | true | false | continue    
+  floatlit  = digit+ "." digit+ (("E" | "e") ("+" | "-")? digit+)?
+  space    += "cR" (~"\n" any)*                       -- comment
+  id        = ~keyword letter idchar*
+  idchar    = letter | digit | "_"
+  comment     =  singleLnCmt (~"\n" any)*                      -- singleline
+}
