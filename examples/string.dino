@@ -1,7 +1,7 @@
-🦖 Dino
 quest concatenateStrings(stegostring str1, stegostring str2) {
   hatch str1 + " " + str2
 }
 
 🦖 Usage
-dinostring result ~ concatenateStrings(str1 ~ "Hello", str2 ~ "Dino!")
+dinostring result = concatenateStrings("Hello", "Dino!")
+rawr result
