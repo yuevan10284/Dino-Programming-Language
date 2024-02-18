@@ -1,6 +1,5 @@
-🦖 Dino
 quest sumOfSquares(dinum n) {
-  dinum sum ~ 0
+  dinum sum = 0
   roar 1 to n {
     sum = i * i + sum
   }
@@ -8,4 +7,4 @@ quest sumOfSquares(dinum n) {
 }
 
 🦖 Usage
-int SoS ~ sumOfSquares(n ~ 3)
+int SoS = sumOfSquares(3)
