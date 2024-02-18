@@ -8,5 +8,5 @@ quest hungry(dinum hunger) {
 }
 
 🦖 Usage
-stegostring ~ hungry(hunger = 50)
+stegostring = hungry(50)
 
