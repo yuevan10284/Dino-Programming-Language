@@ -29,17 +29,14 @@ const syntaxErrors = [
 ]
 
 describe("The parser", () => {
-  const grammar = ohm.grammar(fs.readFileSync("src/rawrdino.ohm"))
   for (const [scenario, source] of syntaxChecks) {
     it(`properly specifies ${scenario}`, () => {
-      assert(grammar.match(source).succeeded())
-    })
+      assert(parse(source).succeeded());
+    });
   }
   for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
     it(`does not permit ${scenario}`, () => {
-      const match = grammar.match(source)
-      assert(!match.succeeded())
-      assert(new RegExp(errorMessagePattern).test(match.message))
-    })
+      assert.throws(() => parse(source), errorMessagePattern);
+    });
   }
-})
+});
