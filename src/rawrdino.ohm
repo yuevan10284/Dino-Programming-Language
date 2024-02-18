@@ -2,7 +2,7 @@ dino {
   Program   = Statement+
   Statement = (let | const) id "=" Exp             -- vardec may expand to be static.
             | function id "(" Params ")" Block     -- fundec
-            | id "~" Exp                           -- assign
+            | id "=" Exp                           -- assign
             | print Exp                            -- print
             | break                                -- break
             | continue                             -- continue
