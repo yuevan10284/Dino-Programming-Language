@@ -75,8 +75,8 @@ var myString = "Hello, World!";
 <td>
 
 ```
-dinum eggs ~ 0
-stegostring dinoMessage ~ "roar, world"
+dinum eggs = 0
+stegostring dinoMessage = "roar, world"
 ```
 
 </td>
@@ -114,27 +114,6 @@ if-rex x > 5 {
 </table>
 
 ### Loops
-
-<table>
-<tr> <th>JavaScript</th><th>Dino</th><tr>
-</tr>
-<td>
-    
-```javascript
-for (var x = 0; x < 5; x++) {
-    break;
-}
-```
-</td>
-<td>
-    
-```
-roar 0 to 5 {
-    stomp
-}
-```
-</td>
-</table>
 
 <table>
 <tr> <th>JavaScript</th><th>Dino</th><tr>
@@ -187,7 +166,7 @@ roaring hit {
     
 ```javascript
 function evenOrOdd(x){
-    return x % 2 == 0
+    return x % 2 > 0
 }
 ```
 </td>
@@ -195,7 +174,7 @@ function evenOrOdd(x){
     
 ```
 quest evenOrOdd(dinum x){
-    hatch x % 2 ~~ 0
+    hatch x % 2 > 0
 }
 ```
 </td>
@@ -219,7 +198,7 @@ let c = subtract(a,b);
 quest subtract(dinum a, dinum b){ 
    hatch a - b
 }
-dinum c = subtract(a ~ 10, b ~ 5)
+dinum c = subtract(10, 5)
 ```
 </td>
 </table>
