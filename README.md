@@ -1,6 +1,8 @@
 # Dino
 ![labossl_programming_language_logo_for_a_language_called_DinoScr_a7db8f2d-1ad2-474e-b542-e8cb4eecb47f](https://github.com/yuevan10284/Dino-Programming-Language/assets/92699280/eb072034-9c9c-4802-b64e-6184a95a2b4f)
 
+# Dino Website
+https://anthony29m.github.io
 
 # Introduction
 In the primordial landscape of programming languages, where the echoes of innovation reverberated through the binary canyons, a language emerged with the thunderous roar of prehistoric beasts and the finesse of ancient civilizations. Behold Dino, a programming language that transcends the ordinary, weaving a narrative of code that echoes the majesty of a time long before algorithms ruled the world. Every line of Dino code is an expedition into the untamed wilderness of creativity, where developers embark on a journey reminiscent of a Jurassic odyssey. This language, curated by the visionary minds of coding pioneers, channels the raw power of dinosaurs into its expressive syntax, turning each program into a thrilling adventure that leaves an indelible mark on the digital terrain.
