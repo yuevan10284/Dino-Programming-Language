@@ -11,7 +11,7 @@ In the primordial landscape of programming languages, where the echoes of innova
 * [@Owen Hunger](https://github.com/ohunger)
 * [@Evan Yu](https://github.com/yuevan10284)
 * [@Anthony Mendizabal](https://github.com/Anthony29M)
-* [@Brandan Bazile](https://github.com/bbazile)
+* [@Brandon Bazile](https://github.com/bbazile)
 
 ## Features
 * Dino Expressions: Channel the raw power of dinosaurs into your code with expressive syntax.
