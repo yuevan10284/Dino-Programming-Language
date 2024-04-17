@@ -11,9 +11,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "c8 mocha"
   },

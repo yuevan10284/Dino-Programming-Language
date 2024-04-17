@@ -1,8 +1,7 @@
-
 import * as fs from "node:fs";
-import ohm from "ohm-js";
+import * as ohm from "ohm-js";
 
-const grammar = ohm.grammar(fs.readFileSync("rawrdino.ohm"));
+const grammar = ohm.grammar(fs.readFileSync("src/rawrdino.ohm"));
 
 export default function parse(sourceCode) {
   const match = grammar.match(sourceCode);

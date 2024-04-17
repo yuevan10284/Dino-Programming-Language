@@ -1,6 +1,6 @@
 dino {
   Program   = Statement+
-  Statement = (let | const) id "=" Exp             -- vardec may expand to be static.
+  Statement = (let | const) id "=" Exp             -- vardec
             | function id "(" Params ")" Block     -- fundec
             | id "=" Exp                           -- assign
             | print Exp                            -- print
@@ -14,9 +14,9 @@ dino {
 
   Block     = "{" Statement* "}"
 
-  IfStmt    = if Exp Block else Block                       
+  IfStmt    = if Exp Block else Block                       -- else                      
             | if Exp Block else IfStmt                      -- elseif
-            | if Exp Block                                  
+            | if Exp Block                                  -- shortif
 
   LoopStmt  = while Exp Block                               -- while
             | for id in Exp ("past" | "till") Exp Block      -- range
@@ -64,13 +64,12 @@ dino {
   for         = "roar" ~alnum
   while       = "roaring" ~alnum
   break       = "stomp" ~alnum
+  in          = "in" ~alnum
   let         = "letdino" ~alnum
-  const       = "dinoconst" ~alnum                      -- might add continue, want to add int string, statically typed.
+  const       = "dinoconst" ~alnum
   continue    =  "keepstomping" ~alnum
   singleLnCmt =  "🦖" ~alnum
   
-  
-
 
   num       = digit+
   keyword   = let | const | print | function | else | if | elseif | while 
