@@ -1,17 +1,13 @@
-import * as ohm from "ohm-js";
-import fs from "fs";
 import * as core from "./core.js";
-
-const dinoGrammar = ohm.grammar(fs.readFileSync("rawrdino.ohm"));
 
 // Dino has static nested scopes.
 
-const FLOAT = core.Type.FLOAT;
-const INT = core.Type.INT;
-const BOOLEAN = core.Type.BOOLEAN;
-const STRING = core.Type.STRING;
-const VOID = core.Type.VOID;
-const ANY = core.Type.ANY;
+// const FLOAT = core.Type.FLOAT;
+// const INT = core.Type.INT;
+// const BOOLEAN = core.Type.BOOLEAN;
+// const STRING = core.Type.STRING;
+// const VOID = core.Type.VOID;
+// const ANY = core.Type.ANY;
 
 function check(condition, message, node) {
   if (!condition) {
@@ -99,12 +95,12 @@ function mustBeInAFunction(context, at) {
   check(context.function, "Return can only appear in a function", at);
 }
 
-export default function analyze(sourceCode) {
+export default function analyze(match) {
   let context = new Context();
 
-  const analyzer = dinoGrammar.createSemantics().addOperation("rep", {
+  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Program(body) {
-      return new core.Program(body.children.map((s) => s.rep()));
+      return new core.program(body.children.map((s) => s.rep()));
     },
     Statement_vardec(modifier, id, _eq, initializer) {
       //VARIABLE DECLARATION
@@ -141,7 +137,7 @@ export default function analyze(sourceCode) {
     },
     Statement_print(_print, argument) {
       //simple print
-      return new core.PrintStatement(argument.rep());
+      return new core.printStatement(argument.rep());
     },
     Statement_return(_return, argument) {
       //RETURN: remember our return is "hatch", check that must be in a function.
@@ -185,10 +181,10 @@ export default function analyze(sourceCode) {
       const alternateRep = alternate.rep();
       return new core.IfStatement(testRep, consequentRep, alternateRep);
     },
-    LoopStmt_while(_while, test, body) {
+    LoopStmt_while(_while, exp, block) {
       //WHILE, similar to carlos but different.
-      const test = test.rep();
-      const body = body.rep();
+      const test = exp.rep();
+      const body = block.rep();
       mustHaveBooleanType(test);
       context = new Context();
       context.inLoop = true;
@@ -317,10 +313,8 @@ export default function analyze(sourceCode) {
     },
   });
 
-  for (const [name, entity] of Object.entries(core.standardLibrary)) {
-    context.locals.set(name, entity);
-  }
-  const match = dinoGrammar.match(sourceCode);
-  if (!match.succeeded()) core.error(match.message);
-  return analyzer(match).rep();
+  // for (const [name, entity] of Object.entries(core.standardLibrary)) {
+  //   context.locals.set(name, entity);
+  // }
+  return builder(match).rep();
 }
