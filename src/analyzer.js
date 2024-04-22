@@ -268,22 +268,22 @@ export default function analyze(match) {
 
 
     //This is still the most confusing part of the class since we down-graded to dynamic how to change this... :( i cry
-    Exp_unary(op, operand) {
-      const [o, x] = [op.sourceString, operand.rep()]
+    Exp_unary(op, exp) {
+      const [o, x] = [op.sourceString, exp.rep()]
       let type
       if (o === "-") {
-        mustHaveNumericType(x, { at: operand })
+        mustHaveNumericType(x, { at: exp })
         type = x.type
       } else if (o === "!") {
-        mustHaveBooleanType(x, { at: operand })
+        mustHaveBooleanType(x, { at: exp })
         type = BOOLEAN
       }
       return new core.UnaryExpression(o, x, type)
     },
-    Exp_ternary(test, _questionMark, consequent, _colon, alternate) {
+    Exp_ternary(test, _questionMark, exp1, _colon, exp2) {
       const x = test.rep()
       mustHaveBooleanType(x)
-      const [y, z] = [consequent.rep(), alternate.rep()]
+      const [y, z] = [exp1.rep(), exp2.rep()]
       mustBeTheSameType(y, z)
       return new core.Conditional(x, y, z)
     },
@@ -331,7 +331,7 @@ export default function analyze(match) {
     Exp7_parens(_open, expression, _close) {
       return expression.rep()
     },
-
+    //Call
     Exp7_call(id, _open, expList, _close) {
       const callee = context.lookup(id.sourceString)
       mustHaveBeenFound(callee, id.sourceString, { at: id })
@@ -340,7 +340,6 @@ export default function analyze(match) {
       mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id })
       return core.call(callee, args)
     },
-
     Exp7_id(id) {
       const entity = context.lookup(id.sourceString)
       mustHaveBeenFound(entity, id.sourceString, { at: id })
