@@ -77,8 +77,8 @@ var myString = "Hello, World!";
 <td>
 
 ```
-dinum eggs = 0
-stegostring dinoMessage = "roar, world"
+dinoconst eggs = 0
+letdino dinoMessage = "roar, world"
 ```
 
 </td>
@@ -175,7 +175,7 @@ function evenOrOdd(x){
 <td>
     
 ```
-quest evenOrOdd(dinum x){
+quest evenOrOdd(x){
     hatch x % 2 > 0
 }
 ```
@@ -197,10 +197,10 @@ let c = subtract(a,b);
 <td>
     
 ```
-quest subtract(dinum a, dinum b){ 
+quest subtract(a, b){ 
    hatch a - b
 }
-dinum c = subtract(10, 5)
+letdino c = subtract(10, 5)
 ```
 </td>
 </table>
