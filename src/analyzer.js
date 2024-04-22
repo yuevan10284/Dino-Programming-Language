@@ -266,40 +266,70 @@ export default function analyze(match) {
     },
     */
 
-    Exp_unary(op, exp) { //Need to udpate this seciton I believe.
-      return core.unary(op.sourceString, exp.rep())
-    },
 
-    Exp_ternary(exp1, _questionMark, exp2, _colon, exp3) {
-      return core.conditional(exp1.rep(), exp2.rep(), exp3.rep())
+    //This is still the most confusing part of the class since we down-graded to dynamic how to change this... :( i cry
+    Exp_unary(op, operand) {
+      const [o, x] = [op.sourceString, operand.rep()]
+      let type
+      if (o === "-") {
+        mustHaveNumericType(x, { at: operand })
+        type = x.type
+      } else if (o === "!") {
+        mustHaveBooleanType(x, { at: operand })
+        type = BOOLEAN
+      }
+      return new core.UnaryExpression(o, x, type)
     },
-
-    Exp1_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp_ternary(test, _questionMark, consequent, _colon, alternate) {
+      const x = test.rep()
+      mustHaveBooleanType(x)
+      const [y, z] = [consequent.rep(), alternate.rep()]
+      mustBeTheSameType(y, z)
+      return new core.Conditional(x, y, z)
     },
-
-    Exp2_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp1_binary(left, op, right) {
+      let [x, o, y] = [left.rep(), op.rep(), right.rep()]
+      mustHaveBooleanType(x)
+      mustHaveBooleanType(y)
+      return new core.BinaryExpression(o, x, y, BOOLEAN)
     },
-
-    Exp3_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp2_binary(left, op, right) {
+      let [x, o, y] = [left.rep(), op.rep(), right.rep()]
+      mustHaveBooleanType(x)
+      mustHaveBooleanType(y)
+      return new core.BinaryExpression(o, x, y, BOOLEAN)
     },
-
-    Exp4_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp3_binary(left, op, right) {
+      const [x, o, y] = [left.rep(), op.sourceString, right.rep()]
+      if (["<", "<=", ">", ">="].includes(op.sourceString))
+        mustHaveNumericOrStringType(x)
+      mustBeTheSameType(x, y)
+      return new core.BinaryExpression(o, x, y, BOOLEAN)
     },
-
-    Exp5_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp4_binary(left, op, right) {
+      const [x, o, y] = [left.rep(), op.sourceString, right.rep()]
+      if (o === "+") {
+        mustHaveNumericOrStringType(x)
+      } else {
+        mustHaveNumericType(x)
+      }
+      mustBeTheSameType(x, y)
+      return new core.BinaryExpression(o, x, y, x.type)
     },
-
-    Exp6_binary(exp1, op, exp2) {
-      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    Exp5_binary(left, op, right) {
+      const [x, o, y] = [left.rep(), op.sourceString, right.rep()]
+      mustHaveNumericType(x)
+      mustBeTheSameType(x, y)
+      return new core.BinaryExpression(o, x, y, x.type)
     },
-
-    Exp7_parens(_open, exp, _close) {
-      return exp.rep()
+    Exp6_binary(left, op, right) {
+      const [x, o, y] = [left.rep(), op.sourceString, right.rep()]
+      mustHaveNumericType(x)
+      mustBeTheSameType(x, y)
+      return new core.BinaryExpression(o, x, y, x.type)
+    },
+    Exp7_parens(_open, expression, _close) {
+      return expression.rep()
     },
 
     Exp7_call(id, _open, expList, _close) {
