@@ -1,5 +1,5 @@
 🦖 Dino
-quest hungry(letdino hunger) {
+quest hungry(hunger) {
   if-rex hunger > 100 {
     hatch "full"
   } t-else {
