@@ -3,5 +3,5 @@ quest concatenateStrings(stegostring str1, stegostring str2) {
 }
 
 🦖 Usage
-dinostring result = concatenateStrings("Hello", "Dino!")
+letdino result = concatenateStrings("Hello", "Dino!")
 rawr result
