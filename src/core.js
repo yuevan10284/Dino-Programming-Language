@@ -12,9 +12,11 @@ export function variable(name, readOnly, type) {
     return { kind: "Variable", name, readOnly, type }
 }
 
+
 export function typeDeclaration(type) {
     return { kind: "TypeDeclaration", type }
 }
+
 
 export const boolType = { kind: "BoolType" }
 export const intType = { kind: "IntType" }
@@ -76,11 +78,11 @@ export function shortReturnStatement() {
 export function ifStatement(test, consequent, alternate) {
     return { kind: "IfStatement", test, consequent, alternate }
 }
-/* I believe we obsoleted longifStatement
+
 export function longifStatement(test, consequent, alternate) {
     return { kind: "IfStatement", test, consequent, alternate }
 }
-*/
+
 export function shortIfStatement(test, consequent) {
     // so example would be if x < 5 { do thing ;} i believe
     return { kind: "ShortIfStatement", test, consequent }
@@ -114,12 +116,9 @@ export function unary(op, operand, type) {
     return { kind: "UnaryExpression", op, operand, type }
 }
 
+//do we have this?
 export function emptyOptional(baseType) {
     return { kind: "EmptyOptional", baseType, type: optionalType(baseType) }
-}
-
-export function subscript(array, index) {
-    return { kind: "SubscriptExpression", array, index, type: array.type.baseType }
 }
 
 export function arrayExpression(elements) {
@@ -142,13 +141,13 @@ export function constructorCall(callee, args) {
     return { kind: "ConstructorCall", callee, args, type: callee }
 }
 
-// These local constants are used to simplify the standard library definitions.
+// So we need to delete these I guess since we are dynamic.
 const floatToFloatType = functionType([floatType], floatType)
 const floatFloatToFloatType = functionType([floatType, floatType], floatType)
 const stringToIntsType = functionType([stringType], arrayType(intType))
 const anyToVoidType = functionType([anyType], voidType)
 
-export const standardLibrary = Object.freeze({ //i think we can take some of these out but i will just leave for now since its redundant.
+export const standardLibrary = Object.freeze({ 
     int: intType,
     float: floatType,
     boolean: boolType,
@@ -166,10 +165,6 @@ export const standardLibrary = Object.freeze({ //i think we can take some of the
     codepoints: fun("codepoints", stringToIntsType),
 })
 
-// We want every expression to have a type property. But we aren't creating
-// special entities for numbers, strings, and booleans; instead, we are
-// just using JavaScript values for those. Fortunately we can monkey patch
-// the JS classes for these to give us what we want.
 String.prototype.type = stringType
 Number.prototype.type = floatType
 BigInt.prototype.type = intType

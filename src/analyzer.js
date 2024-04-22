@@ -1,320 +1,343 @@
-import * as core from "./core.js";
 
-// Dino has static nested scopes.
+import * as core from "./core.js"
 
-// const FLOAT = core.Type.FLOAT;
-// const INT = core.Type.INT;
-// const BOOLEAN = core.Type.BOOLEAN;
-// const STRING = core.Type.STRING;
-// const VOID = core.Type.VOID;
-// const ANY = core.Type.ANY;
-
-function check(condition, message, node) {
-  if (!condition) {
-    throw new Error(`${message}`);
-  }
-}
+// dino is dynamic. Need to add loops.
 
 class Context {
-  constructor(parent = null) {
-    this.parent = parent;
-    this.inLoop = false;
-    this.locals = new Map();
-    this.function = null;
+  constructor({ parent, locals = {} }) {
+    this.parent = parent
+    this.locals = new Map(Object.entries(locals))
   }
-
   add(name, entity) {
-    this.locals.set(name, entity);
+    this.locals.set(name, entity)
   }
   lookup(name) {
-    return this.locals.get(name) || this.parent?.lookup(name);
+    return this.locals.get(name) || this.parent?.lookup(name)
+  }
+  static root() {
+    return new Context({ locals: new Map(Object.entries(core.standardLibrary)) })
   }
   newChildContext(props) {
-    return new Context({ ...this, ...props, parent: this, locals: new Map() });
+    return new Context({ ...this, ...props, parent: this, locals: new Map() })
   }
-  get(name, expectedType, node) {
-    let entity;
-    for (let context = this; context; context = context.parent) {
-      entity = context.locals.get(name);
-      if (entity) break;
-    }
-    check(entity, `${name} not been declared`, node);
-    check(
-      entity.constructor === expectedType,
-      `${name} was expected type ${expectedType.name}`,
-      node
-    );
-    return entity;
-  }
-}
-
-function mustHaveNumericOrStringType(e, at) {
-  check([INT, FLOAT, STRING].includes(e.type), "Expected num or str", at);
-}
-function mustHaveNumericType(e, at) {
-  check([INT, FLOAT].includes(e.type), "Expected a num", at);
-}
-
-function mustHaveBooleanType(e, at) {
-  check(e.type === BOOLEAN, "Expected bool", at);
-}
-function mustHaveIntegerType(e, at) {
-  check(e.type === INT, "Expected int", at);
-}
-function mustBeTheSameType(e1, e2, at) {
-  check(equivalent(e1.type, e2.type), "Operands do not have same type", at);
-}
-function equivalent(t1, t2) {
-  return (
-    t1 === t2 ||
-    (t1 instanceof core.OptionalType &&
-      t2 instanceof core.OptionalType &&
-      equivalent(t1.baseType, t2.baseType)) ||
-    (t1 instanceof core.ArrayType &&
-      t2 instanceof core.ArrayType &&
-      equivalent(t1.baseType, t2.baseType)) ||
-    (t1.constructor === core.FunctionType &&
-      t2.constructor === core.FunctionType &&
-      equivalent(t1.returnType, t2.returnType) &&
-      t1.paramTypes.length === t2.paramTypes.length &&
-      t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
-  );
-}
-function mustNotBeReadOnly(e, at) {
-  check(!e.readOnly, `Cannot assign to constant ${e.name}`, at);
-}
-function mustBeInLoop(context, at) {
-  check(context.inLoop, "Break can only appear in loop", at);
-}
-
-function mustNotAlreadyBeDeclared(context, name, at) {
-  //clarify if this..
-  check(!context.lookup(name), `Identifier ${name} already declared`, at);
-}
-function mustBeInAFunction(context, at) {
-  check(context.function, "Return can only appear in a function", at);
 }
 
 export default function analyze(match) {
-  let context = new Context();
+
+  let context = new Context({ locals: core.standardLibrary })
+
+  function must(condition, message, errorLocation) {
+    if (!condition) {
+      const prefix = errorLocation.at.source.getLineAndColumnMessage()
+      throw new Error(`${prefix}${message}`)
+    }
+  }
+
+  function mustHaveBooleanType(e, at) {
+    check(e.type === BOOLEAN, "Expected a boolean", at)
+  }
+  function mustHaveIntegerType(e, at) {
+    check(e.type === INT, "Expected an integer", at)
+  }
+  function mustBeTheSameType(e1, e2, at) {
+    check(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
+  }
+  function equivalent(t1, t2) {
+    return (
+      t1 === t2 ||
+      (t1 instanceof core.OptionalType &&
+        t2 instanceof core.OptionalType &&
+        equivalent(t1.baseType, t2.baseType)) ||
+      (t1 instanceof core.ArrayType &&
+        t2 instanceof core.ArrayType &&
+        equivalent(t1.baseType, t2.baseType)) ||
+      (t1.constructor === core.FunctionType &&
+        t2.constructor === core.FunctionType &&
+        equivalent(t1.returnType, t2.returnType) &&
+        t1.paramTypes.length === t2.paramTypes.length &&
+        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+    )
+  }
+
+  function mustNotAlreadyBeDeclared(name, at) {
+    must(!context.locals.has(name), `Identifier ${name} already declared`, at)
+  }
+
+  function mustHaveBeenFound(entity, name, at) {
+    must(entity, `Identifier ${name} not declared`, at)
+  }
+
+  function mustBeAVariable(entity, at) {
+    must(entity?.kind === "Variable", `Functions can not appear here`, at)
+  }
+
+  function mustBeAFunction(entity, at) {
+    must(entity?.kind === "Function", `${entity.name} is not a function`, at)
+  }
+
+  function mustNotBeReadOnly(entity, at) {
+    must(!entity.readOnly, `${entity.name} is read only`, at)
+  }
+
+  function mustBeInLoop(at) {
+    must(context.inLoop, "Break can only appear in a loop", at)
+  }
+
+  function mustBeInAFunction(at) {
+    must(context.function, "Return can only appear in a function", at)
+  }
+
+  function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
+    const equalCount = argCount === paramCount
+    must(equalCount, `${paramCount} argument(s) required but ${argCount} passed`, at)
+  }
 
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
-    Program(body) {
-      return new core.program(body.children.map((s) => s.rep()));
+    Program(statements) {
+      return core.program(statements.children.map(s => s.rep()))
     },
-    Statement_vardec(modifier, id, _eq, initializer) {
-      //VARIABLE DECLARATION
-      const e = initializer.rep();
-      const readOnly = modifier.sourceString === "dinoconst";
-      const v = new core.Variable(id.sourceString, readOnly, e.type); //read
 
-      mustNotAlreadyBeDeclared(context, id.sourceString, { at: id }); //not dec
-      context.add(id.sourceString, v);
-      return new core.VariableDeclaration(v, e);
+    Statement_vardec(_let, id, _eq, exp, _semicolon) {
+
+      const initializer = exp.rep()
+      const variable = core.variable(id.sourceString, false)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, variable)
+      return core.variableDeclaration(variable, initializer)
     },
-    Statement_fundec(_fun, id, _open, params, _close, body) {
-      //FUNCTION DECLARATION: not sure if completely works atm. I don't think allows for recurs
-      params = params.asIteration().children;
-      const fun = new core.Function(id.sourceString, params.length, true);
-      context.add(id.sourceString, fun, id);
-      context = new Context(context);
-      context.function = fun;
-      const paramsRep = params.map((p) => {
-        let variable = new core.Variable(p.sourceString, true);
-        context.add(p.sourceString, variable, p);
-        return variable;
-      });
-      const bodyRep = body.rep();
-      context = context.parent;
-      return new core.FunctionDeclaration(fun, paramsRep, bodyRep);
+
+    Statement_fundec(_fun, id, parameters, _equals, exp, _semicolon) {
+
+      const fun = core.fun(id.sourceString)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, fun)
+
+      context = new Context({ parent: context })
+      const params = parameters.rep()
+      fun.paramCount = params.length
+      const body = exp.rep()
+      context = context.parent
+      return core.functionDeclaration(fun, params, body)
     },
-    Statement_assign(id, _eq, expression) {
-      //assign if not read only.
-      const source = expression.rep();
-      const target = id.rep();
-      mustNotBeReadOnly(target);
-      return new core.Assignment(target, source);
+
+    Params(_open, idList, _close) {
+      return idList.asIteration().children.map(id => {
+        const param = core.variable(id.sourceString, true)
+        mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+        context.add(id.sourceString, param)
+        return param
+      })
     },
-    Statement_print(_print, argument) {
-      //simple print
-      return new core.printStatement(argument.rep());
+
+    Statement_assign(id, _eq, exp, _semicolon) {
+      const target = id.rep()
+      const source = exp.rep()
+      mustNotBeReadOnly(target, { at: id })
+      return core.assignment(target, source)
     },
-    Statement_return(_return, argument) {
-      //RETURN: remember our return is "hatch", check that must be in a function.
-      const e = argument.rep();
-      const readOnly = _return.sourceString === "hatch";
-      context.add(_return.sourceString, readOnly);
-      mustBeInAFunction(context, readOnly);
-      return new core.ReturnStatement(readOnly, e);
+
+    Statement_call(call, _semicolon) {
+        return call.rep()
     },
-    Statement_shortreturn(_return) {
-      const readOnly = _return.sourceString === "hatch";
-      context.add(_return.sourceString, readOnly);
-      mustBeInAFunction(context);
-      return new core.ShortReturnStatement(readOnly);
+
+    Statement_break(breakKeyword, _semicolon) {
+        mustBeInLoop({ at: breakKeyword })
+        return core.breakStatement
     },
-    Statement_break(_break) {
-      //readOnly line is not working for break.
-      mustBeInLoop(context);
-      return new core.BreakStatement();
+
+    Statement_return(returnKeyword, exp, _semicolon) {
+        mustBeInAFunction({ at: returnKeyword })
+        mustReturnSomething(context.function, { at: returnKeyword })
+        const returnExpression = exp.rep()
+        mustBeReturnable(returnExpression, { from: context.function }, { at: exp })
+        return core.returnStatement(returnExpression)
     },
-    IfStmt_long(_if, test, consequent, _else, alternate) {
-      //IF, ELSE IF
-      const testRep = test.rep();
-      mustHaveBooleanType(testRep);
-      const consequentRep = consequent.rep();
-      const alternateRep = alternate.rep();
-      return new core.IfStatement(testRep, consequentRep, alternateRep);
+
+    Statement_shortreturn(returnKeyword, _semicolon) {
+        mustBeInAFunction({ at: returnKeyword })
+        mustNotReturnAnything(context.function, { at: returnKeyword })
+        return core.shortReturnStatement()
     },
-    IfStmt_short(_if, test, consequent) {
-      //short if statement, similar code. May need to touch up these ifs.
-      const testRep = test.rep();
-      mustHaveBooleanType(testRep, test);
-      const consequentRep = consequent.rep();
-      return new core.ShortIfStatement(testRep, consequentRep);
+
+    IfStmt_long(_if, exp, block1, _else, block2) {
+        const test = exp.rep()
+        mustHaveBooleanType(test, { at: exp })
+        context = context.newChildContext()
+        const consequent = block1.rep()
+        context = context.parent
+        context = context.newChildContext()
+        const alternate = block2.rep()
+        context = context.parent
+        return core.ifStatement(test, consequent, alternate)
     },
-    IfStmt_elsif(_if, test, consequent, _else, alternate) {
-      //no new context.
-      const testRep = test.rep();
-      mustHaveBooleanType(testRep);
-      const consequentRep = consequent.rep();
-      const alternateRep = alternate.rep();
-      return new core.IfStatement(testRep, consequentRep, alternateRep);
+
+    IfStmt_elsif(_if, exp, block, _else, trailingIfStatement) {
+        const test = exp.rep()
+        mustHaveBooleanType(test, { at: exp })
+        context = context.newChildContext()
+        const consequent = block.rep()
+        context = context.parent
+        const alternate = trailingIfStatement.rep()
+        return core.ifStatement(test, consequent, alternate)
     },
+
+    IfStmt_short(_if, exp, block) {
+        const test = exp.rep()
+        mustHaveBooleanType(test, { at: exp })
+        context = context.newChildContext()
+        const consequent = block.rep()
+        context = context.parent
+        return core.shortIfStatement(test, consequent)
+    },
+
     LoopStmt_while(_while, exp, block) {
-      //WHILE, similar to carlos but different.
-      const test = exp.rep();
-      const body = block.rep();
-      mustHaveBooleanType(test);
-      context = new Context();
-      context.inLoop = true;
-      context = context.parent;
-      return new core.WhileStatement(test, body);
+        const test = exp.rep()
+        mustHaveBooleanType(test, { at: exp })
+        context = context.newChildContext({ inLoop: true })
+        const body = block.rep()
+        context = context.parent
+        return core.whileStatement(test, body)
     },
-    /*
-    LoopStmt_repeat(_repeat, count, body) { 
-      const co = count.rep()
-      mustHaveIntegerType(co)
-      const bod = body.rep()
-      return new core.RepeatStatement(co, bod)
-    },
-    */
-    LoopStmt_range(_for, id, _in, low, op, high, body) {
-      // from carlos.
-      const [x, y] = [low.rep(), high.rep()];
-      mustHaveIntegerType(x);
-      mustHaveIntegerType(y);
-      const iterator = new core.Variable(id.sourceString, true);
-      context.add(id.sourceString, iterator);
-      const b = body.rep();
-      return new core.ForRangeStatement(iterator, x, op.rep(), y, b);
-    },
-    Block(_open, body, _close) {
-      return body.rep();
-    },
-    Exp_unary(op, operand) {
-      const [o, x] = [op.sourceString, operand.rep()];
-      let type;
-      if (o === "-") {
-        mustHaveNumericType(x, { at: operand });
-        type = x.type;
-      } else if (o === "!") {
-        mustHaveBooleanType(x, { at: operand });
-        type = BOOLEAN;
-      }
-      return new core.UnaryExpression(o, x, type);
-    },
-    Exp_ternary(test, _questionMark, consequent, _colon, alternate) {
-      const x = test.rep();
-      mustHaveBooleanType(x);
-      const [y, z] = [consequent.rep(), alternate.rep()];
-      mustBeTheSameType(y, z);
-      return new core.Conditional(x, y, z);
-    },
-    Exp1_binary(left, op, right) {
-      let [x, o, y] = [left.rep(), op.rep(), right.rep()];
-      mustHaveBooleanType(x);
-      mustHaveBooleanType(y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
-    },
-    Exp2_binary(left, op, right) {
-      let [x, o, y] = [left.rep(), op.rep(), right.rep()];
-      mustHaveBooleanType(x);
-      mustHaveBooleanType(y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
-    },
-    Exp3_binary(left, op, right) {
-      const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      if (["<", "<=", ">", ">="].includes(op.sourceString))
-        mustHaveNumericOrStringType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
-    },
-    Exp4_binary(left, op, right) {
-      const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      if (o === "+") {
-        mustHaveNumericOrStringType(x);
-      } else {
-        mustHaveNumericType(x);
-      }
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
-    },
-    Exp5_binary(left, op, right) {
-      const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      mustHaveNumericType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
-    },
-    Exp6_binary(left, op, right) {
-      const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      mustHaveNumericType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
-    },
-    Exp7_parens(_open, expression, _close) {
-      return expression.rep();
-    },
-    Call(callee, left, args, _right) {
-      const fun = context.get(callee.sourceString, core.Function, callee);
-      const argsRep = args.asIteration().rep();
-      check(
-        argsRep.length === fun.paramCount,
-        `Expected ${fun.paramCount} args, found ${argsRep.length}`,
-        left
-      );
-      return new core.Call(fun, argsRep);
-    },
-    id(_first, _rest) {
-      return context.get(this.sourceString, core.Variable, this);
-    },
-    true(_) {
-      return true;
-    },
-    false(_) {
-      return false;
-    },
-    floatlit(_whole, _point, _fraction, _e, _sign, _exponent) {
-      return Number(this.sourceString);
-    },
-    num(_digits) {
-      return BigInt(this.sourceString);
-    },
-    /*
-    _terminal() {
-      return this.sourceString
-    },
-    */
-    _iter(...children) {
-      return children.map((child) => child.rep());
-    },
-    strlit(_open, chars, _close) {
-      return chars.sourceString;
-    },
-  });
 
-  // for (const [name, entity] of Object.entries(core.standardLibrary)) {
-  //   context.locals.set(name, entity);
-  // }
-  return builder(match).rep();
+    LoopStmt_repeat(_repeat, exp, block) {
+        const count = exp.rep()
+        mustHaveIntegerType(count, { at: exp })
+        context = context.newChildContext({ inLoop: true })
+        const body = block.rep()
+        context = context.parent
+        return core.repeatStatement(count, body)
+    },
+
+    LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
+        const [low, high] = [exp1.rep(), exp2.rep()]
+        mustHaveIntegerType(low, { at: exp1 })
+        mustHaveIntegerType(high, { at: exp2 })
+        const iterator = core.variable(id.sourceString, INT, true)
+        context = context.newChildContext({ inLoop: true })
+        context.add(id.sourceString, iterator)
+        const body = block.rep()
+        context = context.parent
+        return core.forRangeStatement(iterator, low, op.sourceString, high, body)
+    },
+
+
+    Statement_print(_print, exp, _semicolon) {
+      return core.printStatement(exp.rep())
+    },
+
+    Statement_while(_while, exp, block) {
+      return core.whileStatement(exp.rep(), block.rep())
+    },
+
+    Block(_open, statements, _close) {
+      return statements.children.map(s => s.rep())
+    },
+
+    
+    /* //would like to add
+    Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      const [consequent, alternate] = [exp1.rep(), exp2.rep()]
+      mustBothHaveTheSameType(consequent, alternate, { at: colon })
+      return core.conditional(test, consequent, alternate, consequent.type)
+    },
+
+    Exp2_or(exp, _ops, exps) {
+      let left = exp.rep()
+      mustHaveBooleanType(left, { at: exp })
+      for (let e of exps.children) {
+        let right = e.rep()
+        mustHaveBooleanType(right, { at: e })
+        left = core.binary("||", left, right, BOOLEAN)
+      }
+      return left
+    },
+
+    Exp2_and(exp, _ops, exps) {
+      let left = exp.rep()
+      mustHaveBooleanType(left, { at: exp })
+      for (let e of exps.children) {
+        let right = e.rep()
+        mustHaveBooleanType(right, { at: e })
+        left = core.binary("&&", left, right, BOOLEAN)
+      }
+      return left
+    },
+    */
+
+    Exp_unary(op, exp) { //Need to udpate this seciton I believe.
+      return core.unary(op.sourceString, exp.rep())
+    },
+
+    Exp_ternary(exp1, _questionMark, exp2, _colon, exp3) {
+      return core.conditional(exp1.rep(), exp2.rep(), exp3.rep())
+    },
+
+    Exp1_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp2_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp3_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp4_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp5_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp6_binary(exp1, op, exp2) {
+      return core.binary(op.sourceString, exp1.rep(), exp2.rep())
+    },
+
+    Exp7_parens(_open, exp, _close) {
+      return exp.rep()
+    },
+
+    Exp7_call(id, _open, expList, _close) {
+      const callee = context.lookup(id.sourceString)
+      mustHaveBeenFound(callee, id.sourceString, { at: id })
+      mustBeAFunction(callee, { at: id })
+      const args = expList.asIteration().children.map(arg => arg.rep())
+      mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id })
+      return core.call(callee, args)
+    },
+
+    Exp7_id(id) {
+      const entity = context.lookup(id.sourceString)
+      mustHaveBeenFound(entity, id.sourceString, { at: id })
+      mustBeAVariable(entity, { at: id })
+      return entity
+    },
+
+    true(_) {
+      return true
+    },
+
+    false(_) {
+      return false
+    },
+    
+    intlit(_digits) {
+        return BigInt(this.sourceString)
+    },
+    //?? aiya still a little lost but trying to make it come together.
+    stringlit(_openQuote, _chars, _closeQuote) {
+        return this.sourceString
+    },
+
+    num(_whole, _point, _fraction, _e, _sign, _exponent) {
+      return Number(this.sourceString)
+    },
+  })
+
+  return builder(match).rep()
 }
