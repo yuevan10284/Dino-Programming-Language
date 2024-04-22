@@ -1,4 +1,4 @@
-quest concatenateStrings(stegostring str1, stegostring str2) {
+quest concatenateStrings(str1, str2) {
   hatch str1 + " " + str2
 }
 
