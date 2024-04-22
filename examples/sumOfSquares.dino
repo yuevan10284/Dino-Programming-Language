@@ -1,4 +1,4 @@
-quest sumOfSquares(dinum n) {
+quest sumOfSquares(n) {
   letdino sum = 0
   roar 1 to n {
     sum = i * i + sum
