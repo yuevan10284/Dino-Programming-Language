@@ -1,5 +1,5 @@
 quest sumOfSquares(dinum n) {
-  dinum sum = 0
+  letdino sum = 0
   roar 1 to n {
     sum = i * i + sum
   }
@@ -7,4 +7,4 @@ quest sumOfSquares(dinum n) {
 }
 
 🦖 Usage
-int SoS = sumOfSquares(3)
+letdino SoS = sumOfSquares(3)
