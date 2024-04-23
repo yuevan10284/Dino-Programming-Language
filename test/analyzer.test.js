@@ -9,13 +9,13 @@ const semanticChecks = [
   ["print statement", 'rawr "ROARR, dino angry. I hate comet"'],
   ["variable print", 'dinoconst j = "wow" rawr j'],
   ["variable reassignment", 'letdino x = 2 x =3'],
-  ["short return", "quest f ( hatch )"],
-  ["long return", "quest f( hatch egg )"],
+  ["short return", "quest f() { hatch }"],
+  ["long return", "quest f() { hatch hit }"],
   ["var declaration", "letdino x = hit"],
   ["const var declaration", "dinoconst ysaurus = miss"],
-  ["arithmetic", "letdino x=1rawr(2*x+5**-3/2-5%8)"],
-  ["assigned functions", "quest f() {} letdino g = fg = f"],
-  ["call of assigned functions", "quest f(dinum x) {} letdino g=fg(1)"],
+  ["arithmetic", "letdino x=1 rawr(2*x+5**-3/2-5%8)"],
+  ["assigned functions", "quest f() {} letdino g = f"],
+  ["call of assigned functions", "quest f(x) {} letdino g=f g(1)"],
   [
     "call of assigned function in expression",
     `quest f(dinum x, boolean y): int {}
@@ -35,7 +35,7 @@ const semanticErrors = [
     "dinoconst x = 1dinoconst x = 1",
     /Identifier x already declared/,
   ],
-  ["assign to const", "dinoconst x = 1x = 2", /Cannot assign to constant/],
+  ["assign to const", "dinoconst x = 1 x = 2", /Cannot assign to constant/],
   [
     "non-distinct fields",
     "dinoconst S {x: hit x: int}",

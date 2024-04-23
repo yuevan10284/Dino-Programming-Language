@@ -354,14 +354,18 @@ export default function analyze(match) {
     false(_) {
       return false
     },
+
+    id(_letter, _idchar) {
+      return this.sourceString
+    },
     
     // intlit(_digits) {
     //     return BigInt(this.sourceString)
     // },
     // //?? aiya still a little lost but trying to make it come together.
-    // stringlit(_openQuote, _chars, _closeQuote) {
-    //     return this.sourceString
-    // },
+    strlit(_openQuote, _chars, _closeQuote) {
+        return this.sourceString
+    },
 
     num(_whole, _point, _fraction, _e, _sign, _exponent) {
       return Number(this.sourceString)
