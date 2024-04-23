@@ -4,6 +4,10 @@ export function program(statements) {
     return { kind: "Program", statements }
 }
 
+export function printStatement(argument) { 
+  return { kind: "printStatement", argument }
+}
+
 export function variableDeclaration(variable, initializer) { //I think the basic declaration ones are alright. Just have to change any carlos names in kind: field
     return { kind: "VariableDeclaration", variable, initializer }
 }

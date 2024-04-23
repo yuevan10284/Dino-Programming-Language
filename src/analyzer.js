@@ -97,7 +97,7 @@ export default function analyze(match) {
       return core.program(statements.children.map(s => s.rep()))
     },
 
-    Statement_vardec(_let, id, _eq, exp, _semicolon) {
+    Statement_vardec(_let, id, _eq, exp) {
 
       const initializer = exp.rep()
       const variable = core.variable(id.sourceString, false)
@@ -106,7 +106,7 @@ export default function analyze(match) {
       return core.variableDeclaration(variable, initializer)
     },
 
-    Statement_fundec(_fun, id, parameters, _equals, exp, _semicolon) {
+    Statement_fundec(_fun, id, _openP, parameters, _closeP, exp) {
 
       const fun = core.fun(id.sourceString)
       mustNotAlreadyBeDeclared(id.sourceString, { at: id })
@@ -129,23 +129,23 @@ export default function analyze(match) {
       })
     },
 
-    Statement_assign(id, _eq, exp, _semicolon) {
+    Statement_assign(id, _eq, exp ) {
       const target = id.rep()
       const source = exp.rep()
       mustNotBeReadOnly(target, { at: id })
       return core.assignment(target, source)
     },
 
-    Statement_call(call, _semicolon) {
-        return call.rep()
-    },
+    // Statement_call(call) {
+    //     return call.rep()
+    // },
 
-    Statement_break(breakKeyword, _semicolon) {
+    Statement_break(breakKeyword) {
         mustBeInLoop({ at: breakKeyword })
         return core.breakStatement
     },
 
-    Statement_return(returnKeyword, exp, _semicolon) {
+    Statement_return(returnKeyword, exp) {
         mustBeInAFunction({ at: returnKeyword })
         mustReturnSomething(context.function, { at: returnKeyword })
         const returnExpression = exp.rep()
@@ -153,7 +153,7 @@ export default function analyze(match) {
         return core.returnStatement(returnExpression)
     },
 
-    Statement_shortreturn(returnKeyword, _semicolon) {
+    Statement_shortreturn(returnKeyword) {
         mustBeInAFunction({ at: returnKeyword })
         mustNotReturnAnything(context.function, { at: returnKeyword })
         return core.shortReturnStatement()
@@ -199,14 +199,14 @@ export default function analyze(match) {
         return core.whileStatement(test, body)
     },
 
-    LoopStmt_repeat(_repeat, exp, block) {
-        const count = exp.rep()
-        mustHaveIntegerType(count, { at: exp })
-        context = context.newChildContext({ inLoop: true })
-        const body = block.rep()
-        context = context.parent
-        return core.repeatStatement(count, body)
-    },
+    // LoopStmt_repeat(_repeat, exp, block) {
+    //     const count = exp.rep()
+    //     mustHaveIntegerType(count, { at: exp })
+    //     context = context.newChildContext({ inLoop: true })
+    //     const body = block.rep()
+    //     context = context.parent
+    //     return core.repeatStatement(count, body)
+    // },
 
     LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
         const [low, high] = [exp1.rep(), exp2.rep()]
@@ -221,13 +221,13 @@ export default function analyze(match) {
     },
 
 
-    Statement_print(_print, exp, _semicolon) {
+    Statement_print(_print, exp) {
       return core.printStatement(exp.rep())
     },
 
-    Statement_while(_while, exp, block) {
-      return core.whileStatement(exp.rep(), block.rep())
-    },
+    // Statement_while(_while, exp, block) {
+    //   return core.whileStatement(exp.rep(), block.rep())
+    // },
 
     Block(_open, statements, _close) {
       return statements.children.map(s => s.rep())
@@ -332,14 +332,14 @@ export default function analyze(match) {
       return expression.rep()
     },
     //Call
-    Exp7_call(id, _open, expList, _close) {
-      const callee = context.lookup(id.sourceString)
-      mustHaveBeenFound(callee, id.sourceString, { at: id })
-      mustBeAFunction(callee, { at: id })
-      const args = expList.asIteration().children.map(arg => arg.rep())
-      mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id })
-      return core.call(callee, args)
-    },
+    // Exp7_call(id, _open, expList, _close) {
+    //   const callee = context.lookup(id.sourceString)
+    //   mustHaveBeenFound(callee, id.sourceString, { at: id })
+    //   mustBeAFunction(callee, { at: id })
+    //   const args = expList.asIteration().children.map(arg => arg.rep())
+    //   mustHaveCorrectArgumentCount(args.length, callee.paramCount, { at: id })
+    //   return core.call(callee, args)
+    // },
     Exp7_id(id) {
       const entity = context.lookup(id.sourceString)
       mustHaveBeenFound(entity, id.sourceString, { at: id })
@@ -355,13 +355,13 @@ export default function analyze(match) {
       return false
     },
     
-    intlit(_digits) {
-        return BigInt(this.sourceString)
-    },
-    //?? aiya still a little lost but trying to make it come together.
-    stringlit(_openQuote, _chars, _closeQuote) {
-        return this.sourceString
-    },
+    // intlit(_digits) {
+    //     return BigInt(this.sourceString)
+    // },
+    // //?? aiya still a little lost but trying to make it come together.
+    // stringlit(_openQuote, _chars, _closeQuote) {
+    //     return this.sourceString
+    // },
 
     num(_whole, _point, _fraction, _e, _sign, _exponent) {
       return Number(this.sourceString)

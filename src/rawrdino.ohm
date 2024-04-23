@@ -18,7 +18,7 @@ dino {
             | if Exp Block                                  -- short
 
   LoopStmt  = while Exp Block                               -- while
-            | for id in Exp ("past" | "till") Exp Block      -- range
+            | for id in Exp ("past" | "till") Exp Block     -- range
 
   Exp       = ("-" | "!") Exp7                        -- unary
             | Exp1 "?" Exp1 ":" Exp                   -- ternary
@@ -47,7 +47,7 @@ dino {
   strlit    = "\"" (~"\"" any)* "\""
 
   Call      = id "(" Args ")"
-  Params    = ListOf<id, ",">
+  Params    = "(" ListOf<id, ","> ")"
   Args      = ListOf<Exp, ",">
 
   Return      = return Exp 		                        -- exp 
@@ -70,7 +70,7 @@ dino {
   singleLnCmt =  "🦖" ~alnum
   
 
-  num       = digit+
+  num       = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
   keyword   = let | const | print | function | else | if | elseif | while 
             | for | in | break | return | true | false | continue    
   floatlit  = digit+ "." digit+ (("E" | "e") ("+" | "-")? digit+)?
