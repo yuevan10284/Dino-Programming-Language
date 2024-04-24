@@ -8,6 +8,6 @@ quest hungry(hunger) {
 }
 
 🦖 Usage
-letdino = hungry(50)
-rawr stegostring
+letdino str = hungry(50)
+rawr str
 
