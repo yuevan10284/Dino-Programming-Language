@@ -1,7 +1,7 @@
 dino {
   Program   = Statement+
   Statement = (let | const) id "=" Exp             -- vardec
-            | function id "(" Params ")" Block     -- fundec
+            | function id Params Block             -- fundec
             | id "=" Exp                           -- assign
             | print Exp                            -- print
             | break                                -- break
