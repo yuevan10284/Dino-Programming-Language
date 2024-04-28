@@ -34,19 +34,19 @@ export default function analyze(match) {
     }
   }
 
-  function mustHaveBooleanType(e, at) {
-    check(e.type === BOOLEAN, "Expected a boolean", at);
-  }
-  function mustHaveIntegerType(e, at) {
-    check(e.type === INT, "Expected an integer", at);
-  }
-  function mustBeTheSameType(e1, e2, at) {
-    check(
-      equivalent(e1.type, e2.type),
-      "Operands do not have the same type",
-      at
-    );
-  }
+  // function mustHaveBooleanType(e, at) {
+  //   check(e.type === BOOLEAN, "Expected a boolean", at);
+  // }
+  // function mustHaveIntegerType(e, at) {
+  //   check(e.type === INT, "Expected an integer", at);
+  // }
+  // function mustBeTheSameType(e1, e2, at) {
+  //   check(
+  //     equivalent(e1.type, e2.type),
+  //     "Operands do not have the same type",
+  //     at
+  //   );
+  // }
   function equivalent(t1, t2) {
     return (
       t1 === t2 ||
@@ -165,7 +165,7 @@ export default function analyze(match) {
 
     IfStmt_long(_if, exp, block1, _else, block2) {
       const test = exp.rep();
-      mustHaveBooleanType(test, { at: exp });
+
       context = context.newChildContext();
       const consequent = block1.rep();
       context = context.parent;
@@ -177,7 +177,7 @@ export default function analyze(match) {
 
     IfStmt_elsif(_if, exp, block, _else, trailingIfStatement) {
       const test = exp.rep();
-      mustHaveBooleanType(test, { at: exp });
+
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
@@ -187,7 +187,7 @@ export default function analyze(match) {
 
     IfStmt_short(_if, exp, block) {
       const test = exp.rep();
-      mustHaveBooleanType(test, { at: exp });
+
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
@@ -196,7 +196,7 @@ export default function analyze(match) {
 
     LoopStmt_while(_while, exp, block) {
       const test = exp.rep();
-      mustHaveBooleanType(test, { at: exp });
+
       context = context.newChildContext({ inLoop: true });
       const body = block.rep();
       context = context.parent;
@@ -214,8 +214,7 @@ export default function analyze(match) {
 
     LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
       const [low, high] = [exp1.rep(), exp2.rep()];
-      mustHaveIntegerType(low, { at: exp1 });
-      mustHaveIntegerType(high, { at: exp2 });
+
       const iterator = core.variable(id.sourceString, INT, true);
       context = context.newChildContext({ inLoop: true });
       context.add(id.sourceString, iterator);
@@ -273,61 +272,51 @@ export default function analyze(match) {
       const [o, x] = [op.sourceString, exp.rep()];
       let type;
       if (o === "-") {
-        mustHaveNumericType(x, { at: exp });
+
         type = x.type;
       } else if (o === "!") {
-        mustHaveBooleanType(x, { at: exp });
+
         type = BOOLEAN;
       }
-      return new core.UnaryExpression(o, x, type);
+      return new core.unary(o, x, type);
     },
     Exp_ternary(test, _questionMark, exp1, _colon, exp2) {
       const x = test.rep();
-      mustHaveBooleanType(x);
+
       const [y, z] = [exp1.rep(), exp2.rep()];
-      mustBeTheSameType(y, z);
-      return new core.Conditional(x, y, z);
+
+      return new core.conditional(x, y, z);
     },
     Exp1_binary(left, op, right) {
       let [x, o, y] = [left.rep(), op.rep(), right.rep()];
-      mustHaveBooleanType(x);
-      mustHaveBooleanType(y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
+
+      return new core.binary(o, x, y, BOOLEAN);
     },
     Exp2_binary(left, op, right) {
       let [x, o, y] = [left.rep(), op.rep(), right.rep()];
-      mustHaveBooleanType(x);
-      mustHaveBooleanType(y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
+
+      return new core.binary(o, x, y, BOOLEAN);
     },
     Exp3_binary(left, op, right) {
       const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
       if (["<", "<=", ">", ">="].includes(op.sourceString))
-        mustHaveNumericOrStringType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, BOOLEAN);
+
+      return new core.binary(o, x, y, BOOLEAN);
     },
     Exp4_binary(left, op, right) {
       const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      if (o === "+") {
-        mustHaveNumericOrStringType(x);
-      } else {
-        mustHaveNumericType(x);
-      }
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
+
+      return new core.binary(o, x, y, x.type);
     },
     Exp5_binary(left, op, right) {
       const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      mustHaveNumericType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
+
+      return new core.binary(o, x, y, x.type);
     },
     Exp6_binary(left, op, right) {
       const [x, o, y] = [left.rep(), op.sourceString, right.rep()];
-      mustHaveNumericType(x);
-      mustBeTheSameType(x, y);
-      return new core.BinaryExpression(o, x, y, x.type);
+
+      return new core.binary(o, x, y, x.type);
     },
     Exp7_parens(_open, expression, _close) {
       return expression.rep();
@@ -366,6 +355,10 @@ export default function analyze(match) {
     // //?? aiya still a little lost but trying to make it come together.
     strlit(_openQuote, _chars, _closeQuote) {
       return this.sourceString;
+    },
+
+    floatlit(_whole, _point, _fraction, _e, _sign, _exponent) {
+      return Number(this.sourceString);
     },
 
     num(_whole, _point, _fraction, _e, _sign, _exponent) {
