@@ -4,16 +4,18 @@ export function program(statements) {
     return { kind: "Program", statements }
 }
 
+
 export function printStatement(argument) { 
-  return { kind: "printStatement", argument }
+  return { kind: "PrintStatement", argument }
 }
 
+//got rid of type
 export function variableDeclaration(variable, initializer) { //I think the basic declaration ones are alright. Just have to change any carlos names in kind: field
     return { kind: "VariableDeclaration", variable, initializer }
 }
 
-export function variable(name, readOnly, type) {
-    return { kind: "Variable", name, readOnly, type }
+export function variable(name, readOnly) {
+    return { kind: "Variable", name, readOnly }
 }
 
 
@@ -120,10 +122,6 @@ export function unary(op, operand, type) {
     return { kind: "UnaryExpression", op, operand, type }
 }
 
-//do we have this?
-export function emptyOptional(baseType) {
-    return { kind: "EmptyOptional", baseType, type: optionalType(baseType) }
-}
 
 export function arrayExpression(elements) {
     return { kind: "ArrayExpression", elements, type: arrayType(elements[0].type) }

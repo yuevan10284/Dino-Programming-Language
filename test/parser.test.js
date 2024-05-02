@@ -2,19 +2,19 @@ import assert from "assert/strict";
 import parse from "../src/parser.js";
 
 const syntaxChecks = [
-  ["all numeric literal forms", "rawr(8 * 89.123)"],
-  ["complex expressions", "rawr(83 * ((((-((((13 / 21)))))))) + 1 - 0)"],
-  ["all unary operators", "rawr (-3) rawr (!false)"],
+  ["all numeric literal forms", "rawr 8 * 89.123 "],
+  ["complex expressions", "rawr 3 * ((((-((((13 / 21)))))))) + 1 - 0 "],
+  ["all unary operators", "rawr  -3  rawr !miss"],
   ["all binary operators", "rawr x && y || z * 1 / 2 ** 3 + 4 < 5"],
-  ["all logical operators", "letdino x = true && false || (!false)"],
+  ["all logical operators", "letdino x = hit && miss || (!miss)"],
   [
     "all arithmetic operators",
     "letdino x = (!3) * 2 + 4 - (-7.3) * 8 ** 13 / 1",
   ],
   ["all relational operators", "letdino x = 1<(2<=(3==(4!=(5 >= (6>7)))))"],
   ["the conditional operator", "rawr x ? y : z"],
-  ["comments with no text are ok", "rawr(1)cR\nrawr(0)cR"],
-  ["end of program inside comment", "rawr(0) cR yay"],
+  ["comments with no text are ok", "rawr 1 🦖\nrawr 0 🦖"],
+  ["end of program inside comment", "rawr 0 🦖 yay"],
   ["non-Latin letters in identifiers", "コンパ = 100"],
 ];
 

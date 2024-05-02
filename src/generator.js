@@ -24,7 +24,11 @@ export default function generate(program) {
       p.statements.forEach(gen)
     },
     VariableDeclaration(d) {
-      output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
+      if (d.variable.readOnly){
+        output.push(`const ${gen(d.variable)} = ${gen(d.initializer)};`);
+      } else {
+        output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
+      }
     },
     FunctionDeclaration(d) {
       output.push(`function ${gen(d.fun)}(${gen(d.params).join(", ")}) {`)
@@ -40,6 +44,9 @@ export default function generate(program) {
     },
     Assignment(s) {
       output.push(`${gen(s.target)} = ${gen(s.source)};`)
+    },
+    PrintStatement(p) {
+      output.push(`console.log(${gen(p.argument)});`)
     },
     BreakStatement(s) {
       output.push("break;")

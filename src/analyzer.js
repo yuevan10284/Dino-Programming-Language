@@ -20,7 +20,7 @@ class Context {
     });
   }
   newChildContext(props) {
-    return new Context({ ...this, ...props, parent: this, locals: new Map() });
+    return new Context({ ...this, ...props, parent: this, locals: new Map(), fun: this.function });
   }
 }
 
@@ -62,6 +62,31 @@ export default function analyze(match) {
         t1.paramTypes.length === t2.paramTypes.length &&
         t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
     );
+  }
+
+  function assignable(fromType, toType) {
+    return (
+      toType == ANY ||
+      equivalent(fromType, toType) ||
+      (fromType?.kind === "FunctionType" &&
+        toType?.kind === "FunctionType" &&
+        // covariant in return types
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        // contravariant in parameter types
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
+    )
+  }
+
+  function mustBeAssignable(e, { toType: type }, at) {
+    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
+      type
+    )}`
+    must(assignable(e.type, type), message, at)
+  }
+
+  function mustNotBeReadOnly(e, at) {
+    must(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
   }
 
   function mustNotAlreadyBeDeclared(name, at) {
@@ -106,9 +131,16 @@ export default function analyze(match) {
       return core.program(statements.children.map((s) => s.rep()));
     },
 
-    Statement_vardec(_let, id, _eq, exp) {
+    Statement_vardec(isLet, id, _eq, exp) {
       const initializer = exp.rep();
-      const variable = core.variable(id.sourceString, false);
+      let variable
+      //checking let vs const
+
+      if (isLet.sourceString === "dinoconst"){
+        variable = core.variable(id.sourceString, true);
+      } else {
+        variable = core.variable(id.sourceString, false);
+      }
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
@@ -203,19 +235,11 @@ export default function analyze(match) {
       return core.whileStatement(test, body);
     },
 
-    // LoopStmt_repeat(_repeat, exp, block) {
-    //     const count = exp.rep()
-    //     mustHaveIntegerType(count, { at: exp })
-    //     context = context.newChildContext({ inLoop: true })
-    //     const body = block.rep()
-    //     context = context.parent
-    //     return core.repeatStatement(count, body)
-    // },
 
     LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
       const [low, high] = [exp1.rep(), exp2.rep()];
 
-      const iterator = core.variable(id.sourceString, INT, true);
+      const iterator = core.variable(id.sourceString, true);
       context = context.newChildContext({ inLoop: true });
       context.add(id.sourceString, iterator);
       const body = block.rep();

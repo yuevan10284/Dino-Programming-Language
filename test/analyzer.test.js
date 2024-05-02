@@ -14,33 +14,23 @@ const semanticChecks = [
   ["var declaration", "letdino x = hit"],
   ["const var declaration", "dinoconst ysaurus = miss"],
   ["arithmetic", "letdino x=1 rawr(2*x+5**(-3)/2-5%8)"],
+  ["increment", 'letdino x=1 x = x+1'],
+  ["while loops", 'roaring hit { rawr "hey" }'],
+  ["return in nested if", "quest f() {if-rex hit {hatch}}"],
+  ["comments", "letdino x = 5 🦖 comment"],
+  ["long if", "if-rex miss {letdino x = miss} t-else {letdino y = hit}"],
+  ["long if", "if-rex miss {letdino x = miss} t-else if-rex hit {letdino y = hit}"],
+  ["loop", "roar x in 1 till 10 {}"],
+  ["loop in function", "quest hungry(hunger) {roar hunger in 20 till 100 {hatch}}"],
+  ["continue?", "roaring hit {keepStomping = hit}"],
 ];
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-  // ["non-int increment", "letdino x=missx++", /an integer/],
-  // ["non-int decrement", "letdino x=[]x--", /an integer/],
-  // ["undeclared id", "rawr(x)", /Identifier x not declared/],
-  // [
-  //   "redeclared id",
-  //   "dinoconst x = 1dinoconst x = 1",
-  //   /Identifier x already declared/,
-  // ],
-  // ["assign to const", "dinoconst x = 1 x = 2", /Cannot assign to constant/],
-  // [
-  //   "non-distinct fields",
-  //   "dinoconst S {x: hit x: int}",
-  //   /Fields must be distinct/,
-  // ],
-  // ["invalid function declaration", "quest x=1", /Invalid function declaration/],
-  // [
-  //   "invalid if condition",
-  //   'if-rex(x=1) {rawr("Invalid")}',
-  //   /Invalid condition/,
-  // ],
-  // ["invalid return statement", "hatch x", /Invalid return statement/],
-  // ["invalid var declaration", "letdino x", /Invalid variable declaration/],
-  // ["invalid const declaration", "dinoconst x", /Invalid constant declaration/],
+  ["undeclared id", "rawr(x)", /Identifier x not declared/],
+  ["numeral declarations", "letdino = 1", /Expected a letter/],
+  ["variable print", 'dinoconst j = "wow" rawr i', /Identifier i not declared/],
+  ["const var declaration", "dinoconst ysaurus = letdino", /keyword/],
 ];
 
 describe("The analyzer", () => {
